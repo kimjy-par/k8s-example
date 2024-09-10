@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maria-deployment
+  namespace: basic-api
+  labels:
+    app: mariadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: mariadb:10.7
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: myroot
+          volumeMounts: 
+            - name: mariadb-storage
+              mountPath: /var/lib/mysql
+      volumes:  
+        - name: mariadb-storage
+          persistentVolumeClaim:
+            claimName: local-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: maria-service
+  namespace: basic-api
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3306
+      targetPort: 3306
+      name: db-port
+  selector:
+    app: mariadb

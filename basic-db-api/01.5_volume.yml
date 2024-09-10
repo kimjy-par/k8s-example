@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  local:
+    path: /home/ubuntu/k8s
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-worker-01
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-pvc
+  namespace: basic-api
+spec:
+  accessModes:
+    - ReadWriteMany  # PV의 accessModes와 일치해야 합니다.
+  resources:
+    requests:
+      storage: 2Gi  # PV의 capacity보다 크거나 같아야 합니다.
+  volumeName: local-pv  # 사용할 PV의 이름을 지정하여 직접 바인딩합니다
