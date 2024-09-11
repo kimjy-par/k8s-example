@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-api-deployment
+  namespace: basic-api
+spec:
+  template:
+    spec:
+      containers:
+      - name: test-api
+        image: kimjypar/test-api:1
